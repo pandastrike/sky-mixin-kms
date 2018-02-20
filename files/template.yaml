@@ -1,3 +1,23 @@
 {{#each keys}}
+MixinKMS{{resourceName}}:
+  Type: "AWS::KMS::Key"
+  DeletionPolicy: "Retain"
+  Properties:
+    Description: {{description}}
+    Enabled: true
+    EnableKeyRotation: false
+    KeyPolicy:
+      Version: "2012-10-17"
+      Statement:
+        {{indent 8 policy}}
+    Tags:
+      {{indent 6 tags}}
 
+MixinKMS{{resourceName}}Alias:
+  Type: "AWS::KMS::Alias"
+  DeletionPolicy: "Retain"
+  Properties:
+    AliasName: {{alias}}
+    TargetKeyId:
+      Ref: MixinKMS{{resourceName}}
 {{/each}}

@@ -18,10 +18,6 @@ var _policy = require("./policy");
 
 var _policy2 = _interopRequireDefault(_policy);
 
-var _environmentVariables = require("./environment-variables");
-
-var _environmentVariables2 = _interopRequireDefault(_environmentVariables);
-
 var _preprocessor = require("./preprocessor");
 
 var _preprocessor2 = _interopRequireDefault(_preprocessor);
@@ -48,9 +44,9 @@ mixin = _asyncToGenerator(function* () {
     template,
     preprocess: _preprocessor2.default,
     //cli
-    getPolicyStatements: _policy2.default,
-    getEnvironmentVariables: _environmentVariables2.default
+    getPolicyStatements: _policy2.default
   });
 })();
 
+//getEnvironmentVariables
 exports.default = mixin;

@@ -5,25 +5,36 @@
 import {collect, project} from "fairmont"
 import Sundog from "sundog"
 
-import {namePool, _exists} from "./utils"
+import {existenceCheck, nameKey} from "./utils"
 
 Policy = (config, global, SDK) ->
-  # exists = await _exists SDK
-  #
-  # names = collect project "name", config.pools
-  # resources = []
-  # for n in names
-  #   if pool = await exists n
-  #     resources.push pool.ARN
-  #   else
-  #     resources.push JSON.stringify "Fn::GetAtt": [namePool(n), "Arn"]
-  #
-  # [
-  #   Effect: "Allow"
-  #   Action: [ "cognito-idp:*" ]
-  #   Resource: resources
-  # ]
+  exists = await existenceCheck SDK
 
-  []
+  names = collect project "name", config.keys
+  resources = []
+  for n in names
+    if {Arn} = await exists n
+      resources.push Arn
+    else
+      resources.push JSON.stringify
+        "Fn::GetAtt": ["MixinKMS#{nameKey n}", "Arn"]
+
+  [
+    Effect: "Allow"
+    Action: [
+      "kms:Encrypt"
+      "kms:Decrypt"
+      "kms:ReEncrypt*"
+      "kms:GenerateDataKey*"
+      "kms:DescribeKey"
+    ]
+    Resource: resources
+  ,
+    Effect: "Allow"
+    Action: [
+      "kms:GenerateRandom"
+    ]
+    Resource: ["*"]
+  ]
 
 export default Policy

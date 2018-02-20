@@ -3,7 +3,7 @@ additionalProperties: false
 properties:
   keys:
     description: >
-      This describes a collection Cognito mixin resource stacks.  See the description for an individual pool stack for more details.
+      This describes a collection of KMS keys and their aliases. See the description for an individual pool stack for more details.
     type: array
     items: {$ref: "#/definitions/key"}
 

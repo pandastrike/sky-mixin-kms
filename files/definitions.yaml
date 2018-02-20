@@ -1,17 +1,12 @@
 key:
   description: >
-    This describes a collection of Cognito resources that should be incorporated into this Sky API deployment.  This includes a User Pool, a client that is authorized to interface with it, and Gateway Authorizer to provide authorization in the Gateway Request (Step 1) of Gateway cycle. Sky retains the User Pool and client upon stack delete.
+    This describes a KMS key and its alias that should be incorporated into this Sky API deployment.
   type: object
   additionalProperties: false
-  required: [name, type]
+  required: [name]
   properties:
     name:
       description: >
-        The name of the User Pool.  This name is used with the associated Cognito resources.
+        The name of the key alias.  The key ID is assigned by AWS and should not be a developer concern.  This alias is used to identify the key for encrypt / decrypt processes, and to generate the CloudFormation resource name.
       type: string
       minLength: 1
-    type:
-      description: >
-        The named preset for the User Pool.  A given pool's internal coniguration is complex, but these presets specify combinations designed to facilitate a use-case goal.
-      type: string
-      enum: [ frictionless ]
