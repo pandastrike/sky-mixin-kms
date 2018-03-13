@@ -32,9 +32,7 @@ Policy = (() => {
       if (({ Arn } = yield exists(n))) {
         resources.push(Arn);
       } else {
-        resources.push(JSON.stringify({
-          "Fn::GetAtt": [`MixinKMS${(0, _utils.nameKey)(n)}`, "Arn"]
-        }));
+        resources.push(`arn:aws:kms:${global.aws.region}:*:alias/${n}`);
       }
     }
     return [{

@@ -16,8 +16,7 @@ Policy = (config, global, SDK) ->
     if {Arn} = await exists n
       resources.push Arn
     else
-      resources.push JSON.stringify
-        "Fn::GetAtt": ["MixinKMS#{nameKey n}", "Arn"]
+      resources.push "arn:aws:kms:#{global.aws.region}:*:alias/#{n}"
 
   [
     Effect: "Allow"
