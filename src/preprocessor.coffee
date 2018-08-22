@@ -19,7 +19,7 @@ process = (SDK, config) ->
   for k in keys when !(await exists k.name)
     output.push expand k, tags, config.environmentVariables.fullName
 
-  {keys: output}
+  {keys: output, vpc: config.aws.vpc, region: config.aws.region}
 
 
 export default process

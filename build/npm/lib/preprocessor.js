@@ -33,7 +33,9 @@ process = (() => {
       }
     }
     return {
-      keys: output
+      keys: output,
+      vpc: config.aws.vpc,
+      region: config.aws.region
     };
   });
 

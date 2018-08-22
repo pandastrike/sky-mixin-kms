@@ -21,3 +21,18 @@ MixinKMS{{resourceName}}Alias:
     TargetKeyId:
       Ref: MixinKMS{{resourceName}}
 {{/each}}
+
+{{#if vpc}}
+EndpointKMS:
+  Type: "AWS::EC2::VPCEndpoint"
+  Properties:
+    VpcId:
+      Ref: VPC
+    ServiceName: com.amazonaws.{{region}}.kms
+    VpcEndpointType: Interface
+    PrivateDnsEnabled: true
+    SubnetIds:
+      "Fn::Split" : [ ",", {"Ref": Subnets} ]
+    SecurityGroupIds:
+      "Fn::Split" : [ ",", {"Ref": SecurityGroups} ]
+{{/if}}
