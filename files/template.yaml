@@ -23,6 +23,7 @@ MixinKMS{{resourceName}}Alias:
 {{/each}}
 
 {{#if vpc}}
+{{#if vpc.new}}
 EndpointKMS:
   Type: "AWS::EC2::VPCEndpoint"
   Properties:
@@ -35,4 +36,5 @@ EndpointKMS:
       "Fn::Split" : [ ",", {"Ref": Subnets} ]
     SecurityGroupIds:
       "Fn::Split" : [ ",", {"Ref": SecurityGroups} ]
+{{/if}}
 {{/if}}

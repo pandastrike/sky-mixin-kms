@@ -1,6 +1,6 @@
 {
   "name": "sky-mixin-kms",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Sky mixin to add AWS KMS resources to a Sky API",
   "main": "build/npm/lib/index.js",
   "files": [
