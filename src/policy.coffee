@@ -1,22 +1,15 @@
-# Panda Sky Mixin: KMS Lambda permission policy
-# This mixin grants the API Lambdas access to a KMS key for use in encryption and decryption.
-# That IAM Role permission is rolled into your CloudFormation stack after being generated here.
-
-import {collect, project} from "fairmont"
 import Sundog from "sundog"
 
-import {existenceCheck, nameKey} from "./utils"
+Policy = (SDK, global, meta, local) ->
+  {get} = Sundog(SDK).AWS.KMS()
 
-Policy = (config, global, SDK) ->
-  exists = await existenceCheck SDK
-
-  names = collect project "name", config.keys
   resources = []
-  for n in names
-    if {Arn} = await exists n
+  for {name} in local.keys
+    try
+      {Arn} = await get "alias/#{name}"
       resources.push Arn
-    else
-      resources.push "arn:aws:kms:#{global.aws.region}:*:alias/#{n}"
+    catch
+      resources.push "arn:aws:kms:#{global.region}:*:alias/#{name}"
 
   [
     Effect: "Allow"

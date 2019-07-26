@@ -1,40 +1,67 @@
-{{#each keys}}
-MixinKMS{{resourceName}}:
-  Type: "AWS::KMS::Key"
-  DeletionPolicy: "Retain"
-  Properties:
-    Description: {{description}}
-    Enabled: true
-    EnableKeyRotation: false
-    KeyPolicy:
-      Version: "2012-10-17"
-      Statement:
-        {{indent 8 policy}}
-    Tags:
-      {{indent 6 tags}}
-
-MixinKMS{{resourceName}}Alias:
-  Type: "AWS::KMS::Alias"
-  DeletionPolicy: "Retain"
-  Properties:
-    AliasName: {{alias}}
-    TargetKeyId:
-      Ref: MixinKMS{{resourceName}}
-{{/each}}
-
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Panda Sky Mixin - KMS
 {{#if vpc}}
-{{#if vpc.new}}
-EndpointKMS:
-  Type: "AWS::EC2::VPCEndpoint"
-  Properties:
-    VpcId:
-      Ref: VPC
-    ServiceName: com.amazonaws.{{region}}.kms
-    VpcEndpointType: Interface
-    PrivateDnsEnabled: true
-    SubnetIds:
-      "Fn::Split" : [ ",", {"Ref": Subnets} ]
-    SecurityGroupIds:
-      "Fn::Split" : [ ",", {"Ref": SecurityGroups} ]
+Parameters:
+  VPC:
+    Type: String
+  Subnets:
+    Type: String
+  AvailabilityZones:
+    Type: String
+  SecurityGroups:
+    Type: String
+  RouteTables:
+    Type: String
 {{/if}}
-{{/if}}
+
+Resources:
+
+  {{#each keys}}
+  {{templateCase name}}:
+    Type: "AWS::KMS::Key"
+    DeletionPolicy: Retain
+    Properties:
+      Description: Key created by the Sky KMS mixin for API {{deployment.name}}
+      Enabled: true
+      EnableKeyRotation: false
+      KeyPolicy:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "Root permissions"
+            Effect: "Allow"
+            Action: "kms:*"
+            Resource: "*"
+            Principal:
+              AWS: !Join
+                - ""
+                - - "arn:aws:iam::"
+                  - !Ref "AWS::AccountId"
+                  - ":root"
+
+      {{#unless isEmpty tags}}
+      Tags:
+        {{#each tags}}
+        - Key: {{@key}}
+          Value: {{@value}}
+        {{/each}}
+      {{/unless}}
+
+  {{templateCase name}}Alias:
+    Type: "AWS::KMS::Alias"
+    DeletionPolicy: Retain
+    Properties:
+      AliasName: alias/{{name}}
+      TargetKeyId: !Ref {{templateCase name}}
+  {{/each}}
+
+  {{#if vpc}}
+  EndpointKMS:
+    Type: "AWS::EC2::VPCEndpoint"
+    Properties:
+      VpcId: !Ref VPC
+      ServiceName: com.amazonaws.{{deployment.region}}.kms
+      VpcEndpointType: Interface
+      PrivateDnsEnabled: true
+      SubnetIds: !Split [ ",", !Ref Subnets ]
+      SecurityGroupIds: !Split [ ",", !Ref SecurityGroups ]
+  {{/if}}
