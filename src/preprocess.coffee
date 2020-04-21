@@ -9,7 +9,7 @@ preprocess = (SDK, global, meta, local) ->
   {keys=[], tags={}} = local
   needed = []
   for k in keys when !(await exists k.name)
-    output.push include k, {tags}
+    needed.push include k, {tags}
 
   if (isEmpty needed) && !meta.vpc
     false
