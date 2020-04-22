@@ -1,7 +1,7 @@
 import Sundog from "sundog"
 
 Policy = (SDK, global, meta, local) ->
-  {get} = (Sundog SDK.config).KMS()
+  {get} = (Sundog SDK).AWS.KMS()
 
   resources = []
   for {name} in local.keys

@@ -1,6 +1,6 @@
 {
   "name": "sky-mixin-kms",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Sky mixin to add AWS KMS resources to a Sky API",
   "main": "build/npm/src/index.js",
   "files": [
@@ -51,6 +51,6 @@
     "panda-river": "^6.0.0",
     "panda-serialize": "^1.0.1",
     "panda-template": "^2.0.1",
-    "sundog": "^6.0.1"
+    "sundog": "^5.0.0"
   }
 }
