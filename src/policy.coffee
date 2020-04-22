@@ -5,10 +5,6 @@ Policy = (SDK, global, meta, local) ->
 
   resources = []
   for {name} in local.keys
-    try
-      {Arn} = await get "alias/#{name}"
-      resources.push Arn
-    catch
       resources.push "arn:aws:kms:#{global.region}:*:alias/#{name}"
 
   [
