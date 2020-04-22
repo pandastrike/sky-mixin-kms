@@ -1,5 +1,5 @@
 import {resolve} from "path"
-import {toJSON, isEmpty} from "panda-parchment"
+import {toJSON, isEmpty, capitalize, camelCase, plainText} from "panda-parchment"
 import {read as _read} from "panda-quill"
 import {yaml} from "panda-serialize"
 import PandaTemplate from "panda-template"
@@ -11,6 +11,7 @@ ajv = new AJV()
 T = new PandaTemplate()
 T.handlebars().registerHelper
     isEmpty: (input) -> isEmpty input
+    templateCase: (input) -> capitalize camelCase plainText input
 
 read = (name) ->
   await _read resolve __dirname, "..", "..", "..", "files", name

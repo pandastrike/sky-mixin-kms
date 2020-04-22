@@ -1,8 +1,8 @@
-import {isEmpty} from "panda-parchment"
+import {isEmpty, include} from "panda-parchment"
 import Sundog from "sundog"
 
 preprocess = (SDK, global, meta, local) ->
-  getKey = Sundog(SDK).AWS.KMS().get
+  getKey = (Sundog SDK.config).KMS().get
   exists = (name) -> await getKey "alias/#{name}"
 
   # Don't ask for resources that already exist.

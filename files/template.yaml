@@ -38,7 +38,7 @@ Resources:
                   - !Ref "AWS::AccountId"
                   - ":root"
 
-      {{#unless isEmpty tags}}
+      {{#unless (isEmpty tags)}}
       Tags:
         {{#each tags}}
         - Key: {{@key}}
