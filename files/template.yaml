@@ -1,6 +1,6 @@
+{{#if vpc}}
 AWSTemplateFormatVersion: "2010-09-09"
 Description: Panda Sky Mixin - KMS
-{{#if vpc}}
 Parameters:
   VPC:
     Type: String
@@ -12,49 +12,9 @@ Parameters:
     Type: String
   RouteTables:
     Type: String
-{{/if}}
 
 Resources:
 
-  {{#each keys}}
-  {{templateCase name}}:
-    Type: "AWS::KMS::Key"
-    DeletionPolicy: Retain
-    Properties:
-      Description: Key created by the Sky KMS mixin for API {{deployment.name}}
-      Enabled: true
-      EnableKeyRotation: false
-      KeyPolicy:
-        Version: "2012-10-17"
-        Statement:
-          - Sid: "Root permissions"
-            Effect: "Allow"
-            Action: "kms:*"
-            Resource: "*"
-            Principal:
-              AWS: !Join
-                - ""
-                - - "arn:aws:iam::"
-                  - !Ref "AWS::AccountId"
-                  - ":root"
-
-      {{#unless (isEmpty tags)}}
-      Tags:
-        {{#each tags}}
-        - Key: {{@key}}
-          Value: {{@value}}
-        {{/each}}
-      {{/unless}}
-
-  {{templateCase name}}Alias:
-    Type: "AWS::KMS::Alias"
-    DeletionPolicy: Retain
-    Properties:
-      AliasName: alias/{{name}}
-      TargetKeyId: !Ref {{templateCase name}}
-  {{/each}}
-
-  {{#if vpc}}
   EndpointKMS:
     Type: "AWS::EC2::VPCEndpoint"
     Properties:
@@ -64,4 +24,4 @@ Resources:
       PrivateDnsEnabled: true
       SubnetIds: !Split [ ",", !Ref Subnets ]
       SecurityGroupIds: !Split [ ",", !Ref SecurityGroups ]
-  {{/if}}
+{{/if}}

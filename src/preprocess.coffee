@@ -1,20 +1,49 @@
-import {isEmpty, include} from "panda-parchment"
+import {isEmpty, include, toJSON, clone} from "panda-parchment"
 import Sundog from "sundog"
 
+generateConfig = (global) ->
+  Policy: """
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Sid": "Root permissions",
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "arn:aws:iam::#{global.accountID}:root"
+        },
+        "Action": "kms:*",
+        "Resource": "*"
+      }
+    ]
+  }
+  """
+  Description: "Key created by the Sky KMS Mixin for API #{global.environment.stack.name}"
+  KeyUsage: "ENCRYPT_DECRYPT"
+  CustomerMasterKeySpec: "SYMMETRIC_DEFAULT"
+  Origin: "AWS_KMS"
+
+
+
 preprocess = (SDK, global, meta, local) ->
-  getKey = (Sundog SDK).AWS.KMS().get
-  exists = (name) -> await getKey "alias/#{name}"
+  kms = Sundog(SDK).AWS.KMS()
+  baseConfig = generateConfig global
 
-  # Don't ask for resources that already exist.
   {keys=[], tags={}} = local
-  needed = []
-  for k in keys when !(await exists k.name)
-    needed.push include k, {tags}
+  for {name} in keys
+    unless await kms.get "alias/#{name}"
+      keyConfig = clone baseConfig
+      unless isEmpty tags
+        keyConfig.Tags = []
+        keyConfig.Tags.push TagKey: t, TagValue: v for t, v in tags
 
-  if (isEmpty needed) && !meta.vpc
+      {KeyId} = await kms.create keyConfig
+
+      await kms.addAlias KeyId, "alias/#{name}"
+
+  unless meta.vpc
     false
   else
-    keys: needed
     vpc: meta.vpc
     deployment:
       region: global.region

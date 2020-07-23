@@ -1,11 +1,11 @@
 import Sundog from "sundog"
 
 Policy = (SDK, global, meta, local) ->
-  {get} = (Sundog SDK).AWS.KMS()
+  kms = Sundog(SDK).AWS.KMS()
 
   resources = []
   for {name} in local.keys
-      resources.push "arn:aws:kms:#{global.region}:*:alias/#{name}"
+    resources.push (await kms.get "alias/#{name}").Arn
 
   [
     Effect: "Allow"
